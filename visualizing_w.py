@@ -30,7 +30,6 @@ n_embeddings = 128
 # that this is 1 of 8 attention heads
 embeddings = torch.randn(n_embeddings, dim_k)
 
-
 # --------------------------------------------------------
 # ADDING POSITIONAL ENCODING
 # --------------------------------------------------------
