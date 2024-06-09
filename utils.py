@@ -9,18 +9,17 @@ class PlotUtils():
     def plot_W(self, weights):
         weights = np.around(np.array(weights), decimals=2)
         fig, ax = plt.subplots(figsize=(7, 7))
-        hm = ax.imshow(weights, cmap='inferno')
+        hm = ax.imshow(weights, cmap='ocean')
         for i in range(len(weights)):
             for j in range(len(weights)):
                 weight = ax.text(j, i, weights[i, j], 
                                 ha="center", va="center", color="b", fontsize=5)
-
         fig.tight_layout()
         plt.show()
 
-    def plot_matrix(self, matrix, name):
+    def plot_matrix(self, matrix, name, color):
         plt.figure(figsize=(8, 8))
-        plt.imshow(matrix, cmap='inferno')
+        plt.imshow(matrix, cmap=color)
         plt.title(f"Matrix {name}")
         plt.colorbar()
         plt.tight_layout()

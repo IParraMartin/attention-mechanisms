@@ -18,8 +18,8 @@ plotter = PlotUtils()
 # and paralelize the computations in 8 heads: 512 // 8 = 64/head
 d_model = 512
 heads = 8
-dim_k = d_model // heads
-dim_v = d_model // heads
+dim_k = d_model // heads # dimensions of K, Q embeddings IN EACH HEAD
+dim_v = d_model // heads # dimensions of V embeddings IN EACH HEAD
 
 # --------------------------------------------------------
 # MAKE TOY EMBEDDINGS
@@ -51,7 +51,9 @@ positional = positional_encoding(d_model=dim_k, seq_len=n_embeddings)
 # add positional information to embeddings
 embeddings = embeddings + positional
 
-plotter.plot_matrix(positional, 'Positional Embeddings')
+plotter.plot_matrix(positional, 
+                    'Positional Embeddings', 
+                    color='inferno')
 
 # --------------------------------------------------------
 # WEIGHT MATRICES
@@ -83,7 +85,7 @@ V = W_v(embeddings)
 grp = [Q, K, V]
 names = ['QW Linear Projection', 'KW Linear Projection', 'VW Linear Projection']
 for i, j in zip(grp, names):
-    plotter.plot_matrix(i.detach().numpy(), j)
+    plotter.plot_matrix(i.detach().numpy(), j, color='viridis')
 
 # --------------------------------------------------------
 # ATTENTION MASK
@@ -110,11 +112,17 @@ context_vector = torch.matmul(attention_weights, V)
 # PLOT CONTEXT VECTOR AND ATTENTION WEIGHTS
 # --------------------------------------------------------
 # plot the masked attention scores: relevance or importance of each key to the corresponding query before applying the softmax
-plotter.plot_matrix(attention_scores.squeeze().detach().numpy(), 'Masked Scores')
+plotter.plot_matrix(attention_scores.squeeze().detach().numpy(), 
+                    'Masked Scores', 
+                    color='plasma')
 # plot the context vectors: encode the relevant information from the entire sequence for each query
-plotter.plot_matrix(context_vector.squeeze().detach().numpy(), 'Context Vectors')
+plotter.plot_matrix(context_vector.squeeze().detach().numpy(), 
+                    'Context Vectors', 
+                    color='plasma')
 # Plot the self-attention: How much attention does each token put to other tokens in the sequence?
-plotter.plot_matrix(attention_weights.squeeze().detach().numpy(), 'Self-Attention')
+plotter.plot_matrix(attention_weights.squeeze().detach().numpy(), 
+                    'Self-Attention', 
+                    color='plasma')
 
 # --------------------------------------------------------
 # APPLY LINEAR LAYER
@@ -136,4 +144,6 @@ class PositionWiseFFNet(nn.Module):
 ffn = PositionWiseFFNet(d_model=64, d_ff=2048, dropout=0.1)
 out = ffn(context_vector)
 
-plotter.plot_matrix(out.squeeze().detach().numpy(), 'Processed Output (input to next layer)')
+plotter.plot_matrix(out.squeeze().detach().numpy(), 
+                    'Processed Output (input to next layer)', 
+                    color='magma')
