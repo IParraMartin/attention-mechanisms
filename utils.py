@@ -6,21 +6,30 @@ class PlotUtils():
     def __init__(self):
         pass
 
-    def plot_W(self, weights):
+    def plot_W(self, weights, name, color, xname=None, yname=None):
         weights = np.around(np.array(weights), decimals=2)
-        fig, ax = plt.subplots(figsize=(7, 7))
-        hm = ax.imshow(weights, cmap='ocean')
-        for i in range(len(weights)):
-            for j in range(len(weights)):
-                weight = ax.text(j, i, weights[i, j], 
-                                ha="center", va="center", color="b", fontsize=5)
-        fig.tight_layout()
+        plt.figure(figsize=(8, 8))
+        plt.imshow(weights, cmap=color)
+
+        if xname is not None:
+            plt.xlabel(xname)
+        if yname is not None:
+            plt.ylabel(yname)
+
+        plt.title(name, fontsize=14)
+        plt.tight_layout()
         plt.show()
 
-    def plot_matrix(self, matrix, name, color):
+    def plot_matrix(self, matrix, name, color, xname=None, yname=None):
         plt.figure(figsize=(8, 8))
         plt.imshow(matrix, cmap=color)
-        plt.title(f"Matrix {name}")
+
+        if xname is not None:
+            plt.xlabel(xname)
+        if yname is not None:
+            plt.ylabel(yname)
+        
+        plt.title(f"Matrix {name}", fontsize=14)
         plt.colorbar()
         plt.tight_layout()
         plt.show()

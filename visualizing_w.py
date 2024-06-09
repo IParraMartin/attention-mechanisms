@@ -46,28 +46,36 @@ def positional_encoding(d_model, seq_len):
     # return the positional embeddings
     return pe
 
-# positions to 64 to make it match with head vectors
-positional = positional_encoding(d_model=dim_k, seq_len=n_embeddings)
-# add positional information to embeddings
-embeddings = embeddings + positional
+# get the positional embedding
+positional = positional_encoding(d_model=d_model, seq_len=n_embeddings)
+# add positional information to embeddings (selecting the first 64 (dim_k) dimensions)
+embeddings = embeddings + positional[:, :dim_k]
+print(positional[:, :64])
 
 plotter.plot_matrix(positional, 
                     'Positional Embeddings', 
-                    color='inferno')
+                    color='RdBu',
+                    xname='Dimension (d_model / h)',
+                    yname='Tokens/chunk')
 
 # --------------------------------------------------------
 # WEIGHT MATRICES
 # --------------------------------------------------------
 # make the linear layer matrices to be multiplied by embeddings
 # We don't need the bias terms, so we set it to False
-W_k = nn.Linear(dim_k, dim_v, bias=False)
-W_q = nn.Linear(dim_k, dim_v, bias=False)
-W_v = nn.Linear(dim_k, dim_v, bias=False)
+W4k = nn.Linear(dim_k, dim_v, bias=False)
+W4q = nn.Linear(dim_k, dim_v, bias=False)
+W4v = nn.Linear(dim_k, dim_v, bias=False)
 
 # Optional: to plot random weights
-# plotter.plot_W(W_k.weight.data)
-# plotter.plot_W(W_q.weight.data)
-# plotter.plot_W(W_v.weight.data)
+weight_matrix = [W4k, W4q, W4v]
+names = ['W for K (Random weights)', 'W for Q (Random weights)', 'W for V (Random weights)']
+for matrix, name in zip(weight_matrix, names):
+    plotter.plot_W(matrix.weight.data, 
+                   name, 
+                   color='twilight',
+                   xname='Dimensions (d_model / h)', 
+                   yname='Tokens/chunk')
 
 # --------------------------------------------------------
 # APPLY Q, K, AND V TO W
@@ -77,15 +85,18 @@ W_v = nn.Linear(dim_k, dim_v, bias=False)
 # K: Each piece of information in the input ("identifier")
 # V: The actual data or information that will be retrieved (content of K)
 
-Q = W_q(embeddings)
-K = W_k(embeddings)
-V = W_v(embeddings)
+K = W4k(embeddings)
+Q = W4q(embeddings)
+V = W4v(embeddings)
 
 # plot the matrices
 grp = [Q, K, V]
 names = ['QW Linear Projection', 'KW Linear Projection', 'VW Linear Projection']
 for i, j in zip(grp, names):
-    plotter.plot_matrix(i.detach().numpy(), j, color='viridis')
+    plotter.plot_matrix(i.detach().numpy(), j, 
+                        color='magma', 
+                        xname='Dimensions (d_model / h)', 
+                        yname='Tokens/chunk')
 
 # --------------------------------------------------------
 # ATTENTION MASK
@@ -114,15 +125,19 @@ context_vector = torch.matmul(attention_weights, V)
 # plot the masked attention scores: relevance or importance of each key to the corresponding query before applying the softmax
 plotter.plot_matrix(attention_scores.squeeze().detach().numpy(), 
                     'Masked Scores', 
-                    color='plasma')
+                    color='viridis',
+                    xname='Tokens/chunk',
+                    yname='Tokens/chunk')
 # plot the context vectors: encode the relevant information from the entire sequence for each query
 plotter.plot_matrix(context_vector.squeeze().detach().numpy(), 
                     'Context Vectors', 
-                    color='plasma')
+                    color='viridis')
 # Plot the self-attention: How much attention does each token put to other tokens in the sequence?
 plotter.plot_matrix(attention_weights.squeeze().detach().numpy(), 
                     'Self-Attention', 
-                    color='plasma')
+                    color='viridis',
+                    xname='Tokens/chunk',
+                    yname='Tokens/chunk')
 
 # --------------------------------------------------------
 # APPLY LINEAR LAYER
@@ -146,4 +161,6 @@ out = ffn(context_vector)
 
 plotter.plot_matrix(out.squeeze().detach().numpy(), 
                     'Processed Output (input to next layer)', 
-                    color='magma')
+                    color='magma',
+                    xname='Dimensions (d_model / h)', 
+                    yname='Tokens/chunk')
