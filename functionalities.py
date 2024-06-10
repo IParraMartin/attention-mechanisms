@@ -4,11 +4,6 @@ import matplotlib.pyplot as plt
 
 torch.manual_seed(42)
 
-tensor = torch.randn(10, 8)
-modified = tensor.view(8, 10)
-
-# print(f'\nShape: {tensor.shape}\n\nOriginal Tensor: {tensor}\n\nNew Tensor: {modified}')
-
 def plot_tensor(one_tensor=None, multiple_tensors=None, main_name=None):
     if multiple_tensors is not None:
         data = [tensor.detach().numpy() for tensor in multiple_tensors]
@@ -26,7 +21,6 @@ def plot_tensor(one_tensor=None, multiple_tensors=None, main_name=None):
     plt.tight_layout()
     plt.show()
 
-
 heads = 8
 model_d = 512
 n_tokens = 10
@@ -34,12 +28,19 @@ k_dim = model_d // heads
 v_dim = model_d // heads
 
 linear = nn.Linear(k_dim, k_dim, bias=False)
-print(linear.weight.data)
+print(f'\nShape of W: {linear.weight.size()}\n')
 
 word_embeddings = torch.randn(n_tokens, k_dim)
-print(word_embeddings.detach().numpy())
+print(f'Shape of d_model in head i: {word_embeddings.size()}\n')
 
 projection = linear(word_embeddings)
-print(projection.size())
+print(f'Shape of W_x projection: {projection.size()}\n')
 
-plot_tensor(projection)
+# plot_tensor(projection)
+# plot_tensor(projection.view(64, 10))
+
+"""
+The resulting matrix C of the multiplication of matrices A and B 
+has dimensions determined by the number of rows in A and the number 
+of columns in B.
+"""
