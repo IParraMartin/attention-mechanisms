@@ -156,7 +156,7 @@ class PositionWiseFFNet(nn.Module):
     def forward(self, x):
         return self.l_2(self.dropout(torch.relu(self.l_1(x))))
 
-ffn = PositionWiseFFNet(d_model=64, d_ff=2048, dropout=0.1)
+ffn = PositionWiseFFNet(d_model=dim_k, d_ff=2048, dropout=0.1)
 out = ffn(context_vector)
 
 plotter.plot_matrix(out.squeeze().detach().numpy(), 
