@@ -50,7 +50,6 @@ def positional_encoding(d_model, seq_len):
 positional = positional_encoding(d_model=d_model, seq_len=n_embeddings)
 # add positional information to embeddings (selecting the first 64 (dim_k) dimensions)
 embeddings = embeddings + positional[:, :dim_k]
-print(positional[:, :64])
 
 plotter.plot_matrix(positional, 
                     'Positional Embeddings', 
