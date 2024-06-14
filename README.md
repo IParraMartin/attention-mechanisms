@@ -1,6 +1,8 @@
 # Toy Implementation of Attention Mechanisms 🤖
 
-
+<p align="center">
+  <img src="kqv.png" width="350" title="Attention!">
+</p>
 
 Welcome to the Toy Implementation of Attention Mechanisms! This repository is designed to help beginners grasp the core concepts of attention mechanisms used in transformer models. By following this guide, you'll understand how single-head attention works, with clear visualizations and step-by-step explanations. Let's dive in!
 
